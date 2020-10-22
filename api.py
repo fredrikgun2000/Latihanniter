@@ -1,3 +1,4 @@
+import email
 import os
 import re
 from flask import Flask,request,redirect
@@ -12,8 +13,11 @@ from sqlalchemy import desc, DateTime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_marshmallow import Marshmallow
+import smtplib
+from random import randint
 
 app = Flask(__name__)
+
 CORS(app)
 ENV='dev'
 if ENV=='dev':
@@ -56,6 +60,48 @@ class DataSchema(ma.Schema):
 
 data_schema=DataSchema()
 datas_schema=DataSchema(many=True)
+
+def random_str(n):
+    ranges=10**(n-1)
+    rangee=(10**n)-1
+    return randint(ranges,rangee)
+
+def SendEmail(emailto,token):
+    server=smtplib.SMTP_SSL('smtp.googlemail.com',465)
+    server.login('gunawanindustri2020@gmail.com','fcgdxryhauoxlgag')
+    subject='Verification Your Email For Data UKSW'
+    # body=open('verify.php').read()
+    body=f'kode verification kamu adalah {token}'
+    msg=f'Subject: {subject}\n{body}'
+    return server.sendmail('gunawanindustri2020@gmail.com',emailto,msg)
+
+@app.route('/Sendemail', methods=['GET'])
+@cross_origin(origin='*')
+def verification_token():
+    email=request.args['email']
+    data=Data.query.filter(Data.email==email).one()
+    token=random_str(6)
+    data.verify_token=token
+    SendEmail(email,token)
+    db.session.commit()
+    return 'sended'
+
+@app.route('/VerifyPost', methods=['POST'])
+@cross_origin(origin='*')
+def check_token():
+    t1=request.form['t1']
+    t2=request.form['t2']
+    t3=request.form['t3']
+    t4=request.form['t4']
+    t5=request.form['t5']
+    t6=request.form['t6']
+    token=f'{t1}{t2}{t3}{t4}{t5}{t6}'
+    email=request.form['email']
+    data=Data.query.filter(Data.email==email).one()
+    if data.verify_token==token:
+        data.verify_token='konfirmasi'
+        db.session.commit()
+        return jsonify(response='sukses'),200
 
 @app.route('/LoginPost', methods=['POST'])
 @cross_origin(origin='*')

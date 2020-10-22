@@ -1,6 +1,8 @@
 $(document).ready(function(){
+	CheckLogin();
 	CheckSession();
 	LoadData();
+	verify();
 })
 
 $(document).on('submit','#LoginPost',function(e){
@@ -18,14 +20,15 @@ $(document).on('submit','#LoginPost',function(e){
 				$('.alert').remove();
 				sessionStorage.setItem('role', data.role);
 				sessionStorage.setItem('nama', data.nama);
+				sessionStorage.setItem('email', data.email);
 				sessionStorage.setItem('foto', data.foto);
 				if (data.verify_token=='kosong') {
-					alert('verify');
+					window.location.href = "http://localhost:8080/verify";
 				}else if(data.verify_token=='konfirmasi'){
 					if (data.role=='admin') {
 						window.location.href = "http://localhost:8080/Admin";
 					}else if (data.role=='mahasiswa') {
-						alert('hai mahasiswa');
+						window.location.href = "http://localhost:8080/Mahasiswa";
 					}
 				}else{
 					alert('verify');
@@ -33,6 +36,24 @@ $(document).on('submit','#LoginPost',function(e){
 				
 			}else{
 				$('#error').append('<div class="alert alert-danger">'+data.response+'</div>');
+			}
+		}
+	})
+})
+
+$(document).on('submit','#verifypost',function(e){
+	e.preventDefault();
+		$.ajax({
+		url:'http://localhost:5000/VerifyPost',
+		method:'POST',
+		data:new FormData(this),
+		dataType:'JSON',
+		contentType: false,
+		cache: false,
+		processData: false,
+		success:function(data){
+			if (data.response=='sukses') {
+				window.location.href = "http://localhost:8080/";
 			}
 		}
 	})
@@ -107,6 +128,29 @@ $(document).on('click','.edit',function(){
 		}
 	})
 })
+
+function verify() {
+	var pagination=$('#pagination').val();
+	if (pagination=='verify') {
+		$('#emailverify').html(sessionStorage.getItem('email'));
+		$('#emailverify_input').val(sessionStorage.getItem('email'));
+		$.ajax({
+			url:'http://localhost:5000/Sendemail',
+			data:'email='+sessionStorage.getItem('email'),
+			method:'GET',
+		})
+	}
+}
+
+
+function CheckLogin() {
+	var getSnama=sessionStorage.getItem('nama');
+	var pagination=$('#pagination').val();
+	if (pagination=='Dashboard' && getSnama==null) {
+		window.location.href = "http://localhost:8080";
+		alert('you must login first');
+	}
+}
 
 function CheckSession() {
 	var getSnama=sessionStorage.getItem('nama');

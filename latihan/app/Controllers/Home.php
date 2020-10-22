@@ -7,9 +7,19 @@ class Home extends BaseController
 		return view('login');
 	}
 
+	public function indexverify()
+	{
+		return view('verify');
+	}
+
 	public function indexadmin()
 	{
-		return view('welcome_message');
+		return view('dashboard');
+	}
+
+	public function indexmahasiswa()
+	{
+		return view('dashboard_mahasiswa');
 	}
 
 	//--------------------------------------------------------------------

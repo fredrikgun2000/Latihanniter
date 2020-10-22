@@ -32,6 +32,8 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::indexlogin');
 $routes->get('/Admin', 'Home::indexadmin');
+$routes->get('/verify', 'Home::indexverify');
+$routes->get('/Mahasiswa', 'Home::indexmahasiswa');
 
 /**
  * --------------------------------------------------------------------
