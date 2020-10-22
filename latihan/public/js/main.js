@@ -38,6 +38,10 @@ $(document).on('submit','#LoginPost',function(e){
 	})
 })
 
+$(document).on('click','#logout',function(){
+	sessionStorage.clear();
+	window.location.href = "http://localhost:8080/";
+})
 
 $(document).on('submit','#post',function(e){
 		e.preventDefault();

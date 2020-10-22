@@ -30,7 +30,13 @@
     <div class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" id="search" placeholder="Search">
     </div>
-    <span id="session_nama"></span>
+	    <div class="dropleft">
+		    <span id="session_nama" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class=""></span>
+		     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+			    <span id="logout" class="dropdown-item text-danger">Logout</span>
+			    
+			  </div>
+	    </div>
   </div>
 </nav>
 <div class="container-fluid py-2" style="background-color: #eeeeee; min-height: 600px;">

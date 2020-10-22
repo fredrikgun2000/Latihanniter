@@ -26,8 +26,16 @@
       <h4 style="font-weight: bold;">Data UKSW</h4>
     <!-- Login Form -->
     <form id="LoginPost" method="POST">
-      <input type="text" id="login" class="fadeIn second form-control" name="email" placeholder="Email Student">
-      <input type="text" id="password" class="fadeIn third form-control" name="password" placeholder="Passoword">
+      <div class="row">
+        <div class="col-12">
+          <input type="text" id="login" class="fadeIn second form-control" name="email" placeholder="Email Student">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <input type="password" id="password" class="fadeIn third form-control" name="password" placeholder="Passoword">
+        </div>
+      </div>
       <input type="submit" class=" btn btn-danger fadeIn fourth" value="Log In">
     </form>
 
