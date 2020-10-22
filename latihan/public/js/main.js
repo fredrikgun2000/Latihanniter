@@ -1,6 +1,43 @@
 $(document).ready(function(){
+	CheckSession();
 	LoadData();
 })
+
+$(document).on('submit','#LoginPost',function(e){
+		e.preventDefault();
+		$.ajax({
+		url:'http://localhost:5000/LoginPost',
+		method:'POST',
+		data:new FormData(this),
+		dataType:'JSON',
+		contentType: false,
+		cache: false,
+		processData: false,
+		success:function(data){
+			if (typeof data.response==="undefined") {
+				$('.alert').remove();
+				sessionStorage.setItem('role', data.role);
+				sessionStorage.setItem('nama', data.nama);
+				sessionStorage.setItem('foto', data.foto);
+				if (data.verify_token=='kosong') {
+					alert('verify');
+				}else if(data.verify_token=='konfirmasi'){
+					if (data.role=='admin') {
+						window.location.href = "http://localhost:8080/Admin";
+					}else if (data.role=='mahasiswa') {
+						alert('hai mahasiswa');
+					}
+				}else{
+					alert('verify');
+				}
+				
+			}else{
+				$('#error').append('<div class="alert alert-danger">'+data.response+'</div>');
+			}
+		}
+	})
+})
+
 
 $(document).on('submit','#post',function(e){
 		e.preventDefault();
@@ -67,6 +104,10 @@ $(document).on('click','.edit',function(){
 	})
 })
 
+function CheckSession() {
+	var getSnama=sessionStorage.getItem('nama');
+	$('#session_nama').html('hai '+'<b>'+getSnama+'</b>');
+}
 
 function LoadData() {
 	$('.card').remove()

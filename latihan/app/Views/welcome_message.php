@@ -30,6 +30,7 @@
     <div class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" id="search" placeholder="Search">
     </div>
+    <span id="session_nama"></span>
   </div>
 </nav>
 <div class="container-fluid py-2" style="background-color: #eeeeee; min-height: 600px;">

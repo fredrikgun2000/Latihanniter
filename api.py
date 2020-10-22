@@ -1,12 +1,16 @@
 import os
 import re
-from flask import Flask,request
-from flask import json,make_response,render_template
+from flask import Flask,request,redirect
+from flask.globals import session
 from flask.json import jsonify
+from flask.wrappers import Response
 from flask_cors import CORS,cross_origin
+import datetime
+from pytz import timezone
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc
+from sqlalchemy import desc, DateTime
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash,check_password_hash
 from flask_marshmallow import Marshmallow
 
 app = Flask(__name__)
@@ -31,19 +35,40 @@ class Data(db.Model):
     nama=db.Column(db.String(255))
     email=db.Column(db.String(255))
     foto=db.Column(db.String(255))
+    password=db.Column(db.String(255))
+    role=db.Column(db.String(255))
+    verify_token=db.Column(db.String(255))
+    created_at=db.Column(db.DateTime, default=datetime.datetime.now(timezone('UTC')).astimezone(timezone('Asia/Jakarta')))
+    Updated_at=db.Column(db.DateTime, default=datetime.datetime.now(timezone('UTC')).astimezone(timezone('Asia/Jakarta')))
 
-    def __init__(self,nim,nama,email,foto):
+    def __init__(self,nim,nama,email,foto,password,role,verify_token):
         self.nim=nim
         self.nama=nama
         self.email=email
         self.foto=foto
+        self.password=password
+        self.role=role
+        self.verify_token=verify_token
 
 class DataSchema(ma.Schema):
     class Meta:
-        fields=('id','nim','nama','email','foto')
+        fields=('id','nim','nama','email','foto','password','role','verify_token')
 
 data_schema=DataSchema()
 datas_schema=DataSchema(many=True)
+
+@app.route('/LoginPost', methods=['POST'])
+@cross_origin(origin='*')
+
+def LoginPost():
+    newemail=request.form['email']
+    newpassword=request.form['password']
+    data=Data.query.filter(Data.email==newemail).one()
+    if data!='':
+        if check_password_hash(data.password,newpassword):
+            return data_schema.jsonify(data),200
+        else:
+            return jsonify(response='Akun atau Password Salah'),200
 
 @app.route('/Post', methods=['POST'])
 @cross_origin(origin='*')
@@ -53,13 +78,24 @@ def PostData():
     newnama=request.form['nama']
     newemail=request.form['email']
     newfoto=request.files['foto']
+    newpassword=generate_password_hash('mahasiswa')
+    newrole='mahasiswa'
+    newtoken='kosong'
 
     app.config['UPLOAD_FILES']='D:\koding\python\crud\latihan\public\img'
     filename_edit=newfoto.filename
     filename=secure_filename(filename_edit.replace(' ',''))
     newfoto.save(os.path.join(app.config['UPLOAD_FILES'],filename))
 
-    data=Data(nim=newnim,nama=newnama,email=newemail,foto=filename_edit.replace(' ',''))
+    data=Data(
+        nim=newnim,
+        nama=newnama,
+        email=newemail,
+        foto=filename_edit.replace(' ',''),
+        password=newpassword,
+        role=newrole,
+        verify_token=newtoken
+        )
     db.session.add(data)
     db.session.commit()
     return data_schema.jsonify(data)
@@ -67,7 +103,7 @@ def PostData():
 @app.route('/Load', methods=['GET'])
 @cross_origin(origin='*')
 def LoadData():
-    dataall=Data.query.order_by(desc(Data.id)).all()
+    dataall=Data.query.filter(Data.role=='mahasiswa').order_by(desc(Data.id)).all()
     result=datas_schema.dump(dataall)
     return jsonify(result)
 
@@ -115,4 +151,5 @@ def Search():
    
 
 if __name__ == "__main__":
+    app.secret_key = os.urandom(24)
     app.run()

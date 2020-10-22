@@ -11,8 +11,10 @@
 	<link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
-
 <div class="wrapper fadeInDown">
+  <div class="row">
+    <div class="col-12" id="error"></div>
+  </div>
   <div id="formContent">
     <!-- Tabs Titles -->
 
@@ -23,9 +25,9 @@
 
       <h4 style="font-weight: bold;">Data UKSW</h4>
     <!-- Login Form -->
-    <form>
-      <input type="text" id="login" class="fadeIn second" name="email" placeholder="Email Student">
-      <input type="text" id="password" class="fadeIn third" name="password" placeholder="Passoword">
+    <form id="LoginPost" method="POST">
+      <input type="text" id="login" class="fadeIn second form-control" name="email" placeholder="Email Student">
+      <input type="text" id="password" class="fadeIn third form-control" name="password" placeholder="Passoword">
       <input type="submit" class=" btn btn-danger fadeIn fourth" value="Log In">
     </form>
 
